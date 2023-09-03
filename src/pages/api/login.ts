@@ -10,7 +10,7 @@ export type LoginResponse = {
 // generate a time stamp for the token
 const generateTimeStamp = (offset?: number) => {
   const now = new Date();
-  const newDate = new Date(now.getTime() + (offset ?? 1 * 1000));
+  const newDate = new Date(now.getTime() + (offset ?? 5 * 60 * 1000));
   // to ISO string
   const iso = newDate.toISOString();
 

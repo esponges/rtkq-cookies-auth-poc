@@ -1,3 +1,4 @@
+import { hasValidAuthTokens } from '@/lib/cookies';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
@@ -7,18 +8,17 @@ type Props = {
 
 const AUTHED_ROUTES = ['/authed'];
 
-const hasAuthCookies = false;
-
 const AuthLayout = ({ children }: Props) => {
   const router = useRouter();
   const isAuthedRoute = AUTHED_ROUTES.includes(router.pathname);
+  const hasValidAuth = hasValidAuthTokens();
 
   useEffect(() => {
-    if (isAuthedRoute && !hasAuthCookies) {
-      console.log('non authed, redirecting to /');
+    if (isAuthedRoute && !hasValidAuth) {
+      console.log('non authed, redirecting to login');
       router.push('/');
     }
-  }, [isAuthedRoute, router]);
+  }, [isAuthedRoute, router, hasValidAuth]);
 
   if (!isAuthedRoute) return children;
 

@@ -1,13 +1,22 @@
 import { useLoginMutation } from '@/store/services/auth';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 export default function Home() {
+  const router = useRouter();
   const [signIn] = useLoginMutation();
 
   const handleLogin = async () => {
-    const res = await signIn().unwrap();
+    try {
+      const res = await signIn().unwrap();
+      console.log(res);
 
-    console.log(res);
+      router.push('/authed');
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.log(e.message);
+      }
+    }
   };
 
   return (

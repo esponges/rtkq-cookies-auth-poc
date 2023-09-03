@@ -19,3 +19,22 @@ export const getAuthCookie = (name: string) => {
 
   return Buffer.from(cookie, 'base64').toString('ascii');
 };
+
+export const hasValidAuthTokens = () => {
+  const token = getAuthCookie(AUTH_TOKEN);
+  const refreshToken = getAuthCookie(AUTH_REFRESH_TOKEN);
+
+  if (!token || !refreshToken) return false;
+
+  const now = new Date();
+  const tokenDate = new Date(token);
+  const refreshTokenDate = new Date(refreshToken);
+
+  // if the token is expired
+  if (now > tokenDate) return false;
+
+  // if the refresh token is expired
+  if (now > refreshTokenDate) return false;
+
+  return true;
+}
