@@ -1,16 +1,21 @@
 import { setCookie, getCookie } from "cookies-next";
 
-const AUTH_COOKIE_NAME = 'auth';
+export const AUTH_TOKEN = 'token';
+export const AUTH_REFRESH_TOKEN = 'refreshToken';
 
-export const setAuthCookie = (token: string) => {
-  setCookie(AUTH_COOKIE_NAME, token, {
+export const setAuthCookie = (token: string, name: string) => {
+  const toBase64 = Buffer.from(token).toString('base64');
+
+  setCookie(name, toBase64, {
     maxAge: 30 * 24 * 60 * 60,
     path: '/',
   });
-  console.log('setAuthCookie', token);
 };
 
-export const getAuthCookie = () => {
-  console.log('getAuthCookie', getCookie(AUTH_COOKIE_NAME));
-  return getCookie(AUTH_COOKIE_NAME);
+export const getAuthCookie = (name: string) => {
+  const cookie = getCookie(name);
+
+  if (!cookie) return null;
+
+  return Buffer.from(cookie, 'base64').toString('ascii');
 };
