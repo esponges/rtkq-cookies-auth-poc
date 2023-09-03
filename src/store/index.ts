@@ -1,8 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { authApi } from './services/auth';
+import { authReducer } from './slices/auth';
 
 export const store = configureStore({
   reducer: {
+    // regular reduces
+    auth: authReducer,
+    // rtks query api
     [authApi.reducerPath]: authApi.reducer,
   },
 

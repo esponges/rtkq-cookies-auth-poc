@@ -3,6 +3,8 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 export type LoginResponse = {
   token: string;
   refreshToken: string;
+  userEmail: string;
+  userName: string;
 };
 
 // set a resolved promise that gets a new token and refreshToken
@@ -12,6 +14,8 @@ const loginMutation = async () => {
       resolve({
         token: 'token',
         refreshToken: 'refreshToken',
+        userEmail: 'userEmail',
+        userName: 'userName',
       });
     }, 1000);
   }) as LoginResponse;
