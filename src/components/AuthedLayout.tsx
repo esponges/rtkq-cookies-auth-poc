@@ -18,6 +18,7 @@ const AuthLayout = ({ children }: Props) => {
   const userToken = getAuthCookie(AUTH_TOKEN);
   const userName = useSelector((state: RootState) => state.auth.userName);
 
+  // fetch user details when non present - probably after a page refresh
   const { data: _, isLoading: __ } = useUserDetailsQuery({ token: userToken || ''}, {
     // conditional query fetching
     // should only fetch if the following conditions are all false

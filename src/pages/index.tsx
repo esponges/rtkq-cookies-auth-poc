@@ -1,6 +1,7 @@
-import { useLoginMutation } from '@/store/services/auth';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+
+import { useLoginMutation } from '@/store/services/auth';
 
 export default function Home() {
   const router = useRouter();
@@ -8,8 +9,7 @@ export default function Home() {
 
   const handleLogin = async () => {
     try {
-      const res = await signIn().unwrap();
-      console.log(res);
+      await signIn().unwrap();
 
       router.push('/authed');
     } catch (e: unknown) {
@@ -22,7 +22,6 @@ export default function Home() {
   return (
     <div className='text-center mt-10'>
       <h1 className='text-xl mb-5'>Welcome to the login</h1>
-      {/* dont display iniline items */}
       <div className='mb-5 flex justify-center'>
         <Link
           href='/authed'

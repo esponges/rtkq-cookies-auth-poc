@@ -16,7 +16,8 @@ export const userApi = createApi({
         params: {
           // any other params
         },
-      })
+      }),
+      keepUnusedDataFor: 300, // keep data 5 minutes in cache - then refetch if needed again
     }),
   }),
 });

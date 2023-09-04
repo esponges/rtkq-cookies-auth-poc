@@ -1,6 +1,7 @@
-import { AUTH_TOKEN, hasValidAuthTokens } from '@/lib/cookies';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+
+import { AUTH_TOKEN, hasValidAuthTokens } from '@/lib/cookies';
 
 const hasValidNextTokens = (request: NextRequest) => {
   const token = request.cookies.get(AUTH_TOKEN)?.value;
