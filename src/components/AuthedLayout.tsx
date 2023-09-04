@@ -41,7 +41,7 @@ const AuthLayout = ({ children }: Props) => {
 
   return (
     <div>
-      <h1>Welcome: <b>{userName}</b></h1>
+      <h1 className='mt-5 ml-5'>Welcome: <b>{userName}</b></h1>
       {children}
     </div>
   );

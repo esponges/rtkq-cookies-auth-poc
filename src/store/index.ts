@@ -13,7 +13,7 @@ export const store = configureStore({
   },
 
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(authApi.middleware),
+    getDefaultMiddleware().concat(authApi.middleware, userApi.middleware),
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export type UserDetailsResponse = {
-  name: string;
-  email: string;
+  userName: string;
+  userEmail: string;
   id: string;
 };
 
@@ -10,8 +10,8 @@ const userDetailsMutation = async () => {
   const response = await new Promise((resolve) => {
     setTimeout(() => {
       resolve({
-        name: 'foowie booie',
-        email: 'foo@boo.com',
+        userName: 'foowie booie',
+        userEmail: 'foo@boo.com',
         id: Math.random().toString(),
       });
     }
