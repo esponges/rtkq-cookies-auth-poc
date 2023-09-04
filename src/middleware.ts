@@ -12,10 +12,10 @@ const hasValidNextTokens = (request: NextRequest) => {
 // This function can be marked `async` if using `await` inside
 export function middleware(request: NextRequest) {
   if (!hasValidNextTokens(request)) {
-    console.log('redirecting with middelware to /');
     return NextResponse.redirect(new URL('/', request.url));
   }
-  console.log('next response');
+
+  // todo: handle case where navigation is towards login and user is logged in
   return NextResponse.next();
 }
 

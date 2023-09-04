@@ -1,6 +1,9 @@
-import { hasValidAuthTokens } from '@/lib/cookies';
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+
+import { RootState } from '@/store';
+import { useUserDetailsQuery } from '@/store/services/user';
+import { AUTH_TOKEN, getAuthCookie } from '@/lib/cookies';
 
 type Props = {
   children: React.ReactNode;
@@ -11,20 +14,34 @@ const AUTHED_ROUTES = ['/authed'];
 const AuthLayout = ({ children }: Props) => {
   const router = useRouter();
   const isAuthedRoute = AUTHED_ROUTES.includes(router.pathname);
-  const hasValidAuth = hasValidAuthTokens();
 
-  useEffect(() => {
-    if (isAuthedRoute && !hasValidAuth) {
-      console.log('non authed, redirecting to login');
-      router.push('/');
-    }
-  }, [isAuthedRoute, router, hasValidAuth]);
+  const userToken = getAuthCookie(AUTH_TOKEN);
+  const userName = useSelector((state: RootState) => state.auth.userName);
+
+  const { data: _, isLoading: __ } = useUserDetailsQuery({ token: userToken || ''}, {
+    // conditional query fetching
+    // should only fetch if the following conditions are all false
+    skip: !isAuthedRoute || !userToken || !!userName,
+  });
+  
+  /* 
+  * THE BEST APPROACH
+  * see middleware.ts for handling redirections on server side
+  */
+
+  // const hasValidAuth = hasValidAuthTokens();
+  // useEffect(() => {
+  //   if (isAuthedRoute && !hasValidAuth) {
+  //     console.log('non authed, redirecting to login');
+  //     router.push('/');
+  //   }
+  // }, [isAuthedRoute, router, hasValidAuth]);
 
   if (!isAuthedRoute) return children;
 
   return (
     <div>
-      <h1>Authed Layout</h1>
+      <h1>Welcome: <b>{userName}</b></h1>
       {children}
     </div>
   );

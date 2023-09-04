@@ -5,6 +5,7 @@ export type LoginResponse = {
   refreshToken: string;
   userEmail: string;
   userName: string;
+  id: string;
 };
 
 // generate a time stamp for the token
@@ -40,6 +41,7 @@ const loginMutation = async () => {
         refreshToken,
         userEmail: 'foo@boo.com',
         userName: 'foowie booie',
+        id: Math.random().toString(),
       });
     }, 1000);
   }) as LoginResponse;

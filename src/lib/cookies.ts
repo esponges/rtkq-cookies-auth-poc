@@ -15,7 +15,7 @@ export const setAuthCookie = (token: string, name: string) => {
 export const getAuthCookie = (name: string) => {
   const cookie = getCookie(name);
 
-  if (!cookie) return null;
+  if (!cookie) return undefined;
 
   return Buffer.from(cookie, 'base64').toString('ascii');
 };
