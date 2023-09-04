@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 import { useLoginMutation } from '@/store/services/auth';
+import { AUTH_REFRESH_TOKEN, AUTH_TOKEN, removeCookies } from '@/lib/cookies';
 
 export default function Home() {
   const router = useRouter();
@@ -34,6 +35,13 @@ export default function Home() {
           className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 ml-5 rounded'
         >
           <span className='text-xl'>Login</span>
+        </button>
+        {/* remove cookies for testing */}
+        <button
+          onClick={() => removeCookies([AUTH_TOKEN, AUTH_REFRESH_TOKEN])}
+          className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 ml-5 rounded'
+        >
+          <span className='text-xl'>Remove cookies</span>
         </button>
       </div>
     </div>

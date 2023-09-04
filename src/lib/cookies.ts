@@ -1,4 +1,4 @@
-import { setCookie, getCookie } from "cookies-next";
+import { setCookie, getCookie, deleteCookie } from 'cookies-next';
 
 export const AUTH_TOKEN = 'token';
 export const AUTH_REFRESH_TOKEN = 'refreshToken';
@@ -20,7 +20,13 @@ export const getAuthCookie = (name: string) => {
   return Buffer.from(cookie, 'base64').toString('ascii');
 };
 
-export const hasValidAuthTokens = (t?:string, rT?:string) => {
+export const removeCookies = (cookies: string[]) => {
+  cookies.forEach((cookie) => {
+    deleteCookie(cookie);
+  });
+};
+
+export const hasValidAuthTokens = (t?: string, rT?: string) => {
   const token = t || getAuthCookie(AUTH_TOKEN);
   const refreshToken = rT || getAuthCookie(AUTH_REFRESH_TOKEN);
 
@@ -37,7 +43,7 @@ export const hasValidAuthTokens = (t?:string, rT?:string) => {
   if (now > refreshTokenDate) return false;
 
   return true;
-}
+};
 
 export const isTokenAboutToExpire = () => {
   const token = getAuthCookie(AUTH_TOKEN);
@@ -54,4 +60,4 @@ export const isTokenAboutToExpire = () => {
   if (tokenDate.getTime() - now.getTime() < 5 * 60 * 1000) return true;
 
   return false;
-}
+};
