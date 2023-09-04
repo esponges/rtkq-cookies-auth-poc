@@ -20,9 +20,9 @@ export const getAuthCookie = (name: string) => {
   return Buffer.from(cookie, 'base64').toString('ascii');
 };
 
-export const hasValidAuthTokens = () => {
-  const token = getAuthCookie(AUTH_TOKEN);
-  const refreshToken = getAuthCookie(AUTH_REFRESH_TOKEN);
+export const hasValidAuthTokens = (t?:string, rT?:string) => {
+  const token = t || getAuthCookie(AUTH_TOKEN);
+  const refreshToken = rT || getAuthCookie(AUTH_REFRESH_TOKEN);
 
   if (!token || !refreshToken) return false;
 
@@ -37,4 +37,21 @@ export const hasValidAuthTokens = () => {
   if (now > refreshTokenDate) return false;
 
   return true;
+}
+
+export const isTokenAboutToExpire = () => {
+  const token = getAuthCookie(AUTH_TOKEN);
+
+  if (!token) return false;
+
+  const now = new Date();
+  const tokenDate = new Date(token);
+
+  // if the token is expired
+  if (now > tokenDate) return false;
+
+  // if the token is about to expire
+  if (tokenDate.getTime() - now.getTime() < 5 * 60 * 1000) return true;
+
+  return false;
 }
