@@ -1,5 +1,6 @@
 import { RootState } from '@/store';
-import { useSelector } from 'react-redux';
+import { expireToken } from '@/store/slices/auth';
+import { useDispatch, useSelector } from 'react-redux';
 
 type Props = {
   isLoading?: boolean;
@@ -12,7 +13,12 @@ const Navbar = ({
   tokenExpiryDate,
   refreshTokenExpiryDate,
 }: Props) => {
+  const dispatch = useDispatch();
   const { userEmail } = useSelector((state: RootState) => state.auth);
+
+  const handleExpireToken = (name: string[]) => {
+    dispatch(expireToken(name));
+  }
 
   // navbar component that displays the user's email or 'Guest'
   return (
@@ -35,8 +41,11 @@ const Navbar = ({
         <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>
           {isLoading ? 'Loading...' : 'Button 1'}
         </button>
+        <button onClick={() => handleExpireToken(["token"])} className='bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-4'>
+          Expire token
+        </button>
         <button className='bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-4'>
-          Button 2
+          Expire refresh token
         </button>
       </div>
     </nav>

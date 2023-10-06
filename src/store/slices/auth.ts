@@ -1,7 +1,7 @@
 import { LoginResponse } from '@/pages/api/login';
-import { createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { authApi } from '../services/auth';
-import { AUTH_REFRESH_TOKEN, AUTH_TOKEN, removeCookies, setAuthCookie } from '@/lib/cookies';
+import { AUTH_REFRESH_TOKEN, AUTH_TOKEN, expireCookies, getAuthCookie, removeCookies, setAuthCookie } from '@/lib/cookies';
 import { userApi } from '../services/user';
 
 const initialState: Partial<LoginResponse> = {};
@@ -10,12 +10,19 @@ const slice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    // logout
     logout: () => {
       // remove the token and refreshToken
       removeCookies([AUTH_TOKEN, AUTH_REFRESH_TOKEN]);
       return initialState;
     },
+    expireToken: (state, action: PayloadAction<string[]>) => {
+      expireCookies(action.payload);
+      const token = getAuthCookie(AUTH_TOKEN);
+      const refreshToken = getAuthCookie(AUTH_REFRESH_TOKEN);
+
+      state.token = token;
+      state.refreshToken = refreshToken;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -41,4 +48,4 @@ const slice = createSlice({
 });
 
 export const authReducer = slice.reducer;
-export const { logout } = slice.actions;
+export const { logout, expireToken } = slice.actions;

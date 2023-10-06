@@ -26,6 +26,15 @@ export const removeCookies = (cookies: string[]) => {
   });
 };
 
+export const expireCookies = (cookies: string[]) => {
+  cookies.forEach((cookie) => {
+    setCookie(cookie, '', {
+      maxAge: 0,
+      path: '/',
+    });
+  });
+}
+
 export const hasValidAuthTokens = (t?: string, rT?: string) => {
   const token = t || getAuthCookie(AUTH_TOKEN);
   const refreshToken = rT || getAuthCookie(AUTH_REFRESH_TOKEN);
