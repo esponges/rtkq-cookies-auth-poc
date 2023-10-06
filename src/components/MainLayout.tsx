@@ -3,7 +3,10 @@ import { useSelector } from 'react-redux';
 
 import { RootState } from '@/store';
 import { useUserDetailsQuery } from '@/store/services/user';
-import { AUTH_TOKEN, getAuthCookie } from '@/lib/cookies';
+import {
+  AUTH_TOKEN,
+  getAuthCookie,
+} from '@/lib/cookies';
 import Navbar from './Navbar';
 
 type Props = {
@@ -12,24 +15,20 @@ type Props = {
 
 const AUTHED_ROUTES = ['/authed'];
 
-const AuthLayout = ({ children }: Props) => {
+const MainLayout = ({ children }: Props) => {
   const router = useRouter();
   const isAuthedRoute = AUTHED_ROUTES.includes(router.pathname);
+  const { token, refreshToken } = useSelector((state: RootState) => state.auth);
 
   const userToken = getAuthCookie(AUTH_TOKEN);
   const userName = useSelector((state: RootState) => state.auth.userName);
 
   // fetch user details when non present - probably after a page refresh
-  const { data: _, isLoading } = useUserDetailsQuery({ token: userToken || ''}, {
-    // conditional query fetching
-    // should only fetch if the following conditions are all false
-    skip: !isAuthedRoute || !userToken,
-  });
-  
-  /* 
-  * THE BEST APPROACH
-  * see middleware.ts for handling redirections on server side
-  */
+
+  /*
+   * THE BEST APPROACH
+   * see middleware.ts for handling redirections on server side
+   */
 
   // const hasValidAuth = hasValidAuthTokens();
   // useEffect(() => {
@@ -43,10 +42,14 @@ const AuthLayout = ({ children }: Props) => {
 
   return (
     <div>
-      <Navbar isLoading={isLoading} />
+      <Navbar
+        // isLoading={isLoading}
+        tokenExpiryDate={token} 
+        refreshTokenExpiryDate={refreshToken}
+      />
       {children}
     </div>
   );
 };
 
-export default AuthLayout;
+export default MainLayout;
