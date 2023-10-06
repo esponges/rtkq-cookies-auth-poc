@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { useUserDetailsQuery } from '@/store/services/user';
 import { AUTH_TOKEN, getAuthCookie } from '@/lib/cookies';
+import Navbar from './Navbar';
 
 type Props = {
   children: React.ReactNode;
@@ -19,10 +20,10 @@ const AuthLayout = ({ children }: Props) => {
   const userName = useSelector((state: RootState) => state.auth.userName);
 
   // fetch user details when non present - probably after a page refresh
-  const { data: _, isLoading: __ } = useUserDetailsQuery({ token: userToken || ''}, {
+  const { data: _, isLoading } = useUserDetailsQuery({ token: userToken || ''}, {
     // conditional query fetching
     // should only fetch if the following conditions are all false
-    skip: !isAuthedRoute || !userToken || !!userName,
+    skip: !isAuthedRoute || !userToken,
   });
   
   /* 
@@ -42,7 +43,7 @@ const AuthLayout = ({ children }: Props) => {
 
   return (
     <div>
-      <h1 className='mt-5 ml-5'>Welcome: <b>{userName}</b></h1>
+      <Navbar isLoading={isLoading} />
       {children}
     </div>
   );

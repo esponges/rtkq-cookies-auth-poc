@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 
 import { useLoginMutation } from '@/store/services/auth';
 import { AUTH_REFRESH_TOKEN, AUTH_TOKEN, removeCookies } from '@/lib/cookies';
@@ -8,7 +7,6 @@ import { RootState } from '@/store';
 import { logout } from '@/store/slices/auth';
 
 export default function Home() {
-  const router = useRouter();
   const dispatch = useDispatch();
   const [signIn] = useLoginMutation();
   const { userEmail } = useSelector((state: RootState) => state.auth);
@@ -16,8 +14,6 @@ export default function Home() {
   const handleLogin = async () => {
     try {
       await signIn().unwrap();
-
-      router.push('/authed');
     } catch (e: unknown) {
       if (e instanceof Error) {
         console.log(e.message);
