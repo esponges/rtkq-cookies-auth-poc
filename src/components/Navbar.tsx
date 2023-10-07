@@ -1,5 +1,5 @@
 import { RootState } from '@/store';
-import { expireToken } from '@/store/slices/auth';
+import { expireToken, logout } from '@/store/slices/auth';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,7 +15,7 @@ const Navbar = ({
   tokenExpiryDate,
   refreshTokenExpiryDate,
 }: Props) => {
-  const [redirectCount, setRedirectCount] = useState(5);
+  const [redirectCount, setRedirectCount] = useState(10);
   const hasStartedCountRef = useRef(false);
 
   const dispatch = useDispatch();
@@ -31,12 +31,27 @@ const Navbar = ({
     }, 1000);
   }, []);
 
+  const handleLogout = useCallback(() => {
+    push('/');
+    dispatch(logout());
+  }, [dispatch, push]);
+
   useEffect(() => {
+    if (redirectCount === 0) {
+      handleLogout();
+    }
+
     if (!hasValidToken && !hasStartedCountRef.current) {
       hasStartedCountRef.current = true;
       handleDecreaseRedirectCount();
     }
-  }, [hasValidToken, handleDecreaseRedirectCount]);
+  }, [
+    hasValidToken,
+    handleDecreaseRedirectCount,
+    redirectCount,
+    push,
+    handleLogout,
+  ]);
 
   const handleExpireToken = (name: string[]) => {
     dispatch(expireToken(name));
@@ -66,7 +81,10 @@ const Navbar = ({
         >
           Expire token
         </button>
-        <button className='bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-4'>
+        <button
+          onClick={() => handleExpireToken(['refreshToken'])}
+          className='bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-4'
+        >
           Expire refresh token
         </button>
       </div>
@@ -74,7 +92,7 @@ const Navbar = ({
       {!hasValidToken && (
         <div className='flex flex-col text-gray-700'>
           <span className='text-sm'>
-            Redirecting to login page in {redirectCount} seconds
+            Token expired, redirecting in: {redirectCount} seconds
           </span>
         </div>
       )}

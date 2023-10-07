@@ -8,7 +8,7 @@ import { logout } from '@/store/slices/auth';
 
 export default function Home() {
   const dispatch = useDispatch();
-  const [signIn] = useLoginMutation();
+  const [signIn, { isLoading }] = useLoginMutation();
   const { userEmail } = useSelector((state: RootState) => state.auth);
 
   const handleLogin = async () => {
@@ -40,7 +40,7 @@ export default function Home() {
             onClick={handleLogin}
             className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 ml-5 rounded'
           >
-            <span className='text-xl'>Login</span>
+            <span className='text-xl'>{isLoading ? 'Logging in...' : 'Login'}</span>
           </button>
         ) : (
           <button
@@ -50,13 +50,6 @@ export default function Home() {
             <span className='text-xl'>Logout</span>
           </button>
         )}
-        {/* remove cookies for testing */}
-        <button
-          onClick={() => removeCookies([AUTH_TOKEN, AUTH_REFRESH_TOKEN])}
-          className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 ml-5 rounded'
-        >
-          <span className='text-xl'>Remove cookies</span>
-        </button>
       </div>
     </div>
   );
