@@ -1,3 +1,4 @@
+import { getValidAuthTokens } from '@/lib/cookies';
 import { RootState } from '@/store';
 import { expireToken, logout } from '@/store/slices/auth';
 import { useRouter } from 'next/router';
@@ -5,13 +6,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 type Props = {
-  isLoading?: boolean;
   tokenExpiryDate?: string;
   refreshTokenExpiryDate?: string;
 };
 
 const Navbar = ({
-  isLoading,
   tokenExpiryDate,
   refreshTokenExpiryDate,
 }: Props) => {
@@ -22,8 +21,7 @@ const Navbar = ({
   const { push } = useRouter();
   const { userEmail } = useSelector((state: RootState) => state.auth);
 
-  const hasValidToken =
-    new Date().getTime() < new Date(tokenExpiryDate || 0).getTime();
+  const { token, refreshToken } = getValidAuthTokens();
 
   const handleDecreaseRedirectCount = useCallback(() => {
     setInterval(() => {
@@ -41,12 +39,12 @@ const Navbar = ({
       handleLogout();
     }
 
-    if (!hasValidToken && !hasStartedCountRef.current) {
+    if (!token && !hasStartedCountRef.current) {
       hasStartedCountRef.current = true;
       handleDecreaseRedirectCount();
     }
   }, [
-    hasValidToken,
+    token,
     handleDecreaseRedirectCount,
     redirectCount,
     push,
@@ -75,21 +73,25 @@ const Navbar = ({
         )}
       </div>
       <div className='flex flex-row'>
-        <button
-          onClick={() => handleExpireToken(['token'])}
-          className='bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-4'
-        >
-          Expire token
-        </button>
-        <button
-          onClick={() => handleExpireToken(['refreshToken'])}
-          className='bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-4'
-        >
-          Expire refresh token
-        </button>
+        {token ? (
+          <button
+            onClick={() => handleExpireToken(['token'])}
+            className='bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-4'
+          >
+            Expire token
+          </button>
+        ) : null}
+        {refreshToken ? (
+          <button
+            onClick={() => handleExpireToken(['refreshToken'])}
+            className='bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-4'
+          >
+            Expire refresh token
+          </button>
+        ) : null}
       </div>
       {/* show redirect count if there's no valid token */}
-      {!hasValidToken && (
+      {!token && refreshToken && (
         <div className='flex flex-col text-gray-700'>
           <span className='text-sm'>
             Token expired, redirecting in: {redirectCount} seconds

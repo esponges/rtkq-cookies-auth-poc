@@ -35,23 +35,18 @@ export const expireCookies = (cookies: string[]) => {
   });
 }
 
-export const hasValidAuthTokens = (t?: string, rT?: string) => {
+export const getValidAuthTokens = (t?: string, rT?: string) => {
   const token = t || getAuthCookie(AUTH_TOKEN);
   const refreshToken = rT || getAuthCookie(AUTH_REFRESH_TOKEN);
 
-  if (!token || !refreshToken) return false;
-
   const now = new Date();
-  const tokenDate = new Date(token);
-  const refreshTokenDate = new Date(refreshToken);
+  const tokenDate = new Date(token || 0);
+  const refreshTokenDate = new Date(refreshToken || 0);
 
-  // if the token is expired
-  if (now > tokenDate) return false;
-
-  // if the refresh token is expired
-  if (now > refreshTokenDate) return false;
-
-  return true;
+  return {
+    token: now < tokenDate ? token : undefined,
+    refreshToken: now < refreshTokenDate ? refreshToken : undefined,
+  };
 };
 
 export const isTokenAboutToExpire = () => {
