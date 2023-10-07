@@ -1,5 +1,7 @@
 import { RootState } from '@/store';
 import { expireToken } from '@/store/slices/auth';
+import { useRouter } from 'next/router';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 type Props = {
@@ -13,12 +15,32 @@ const Navbar = ({
   tokenExpiryDate,
   refreshTokenExpiryDate,
 }: Props) => {
+  const [redirectCount, setRedirectCount] = useState(5);
+  const hasStartedCountRef = useRef(false);
+
   const dispatch = useDispatch();
+  const { push } = useRouter();
   const { userEmail } = useSelector((state: RootState) => state.auth);
+
+  const hasValidToken =
+    new Date().getTime() < new Date(tokenExpiryDate || 0).getTime();
+
+  const handleDecreaseRedirectCount = useCallback(() => {
+    setInterval(() => {
+      setRedirectCount((prev) => prev - 1);
+    }, 1000);
+  }, []);
+
+  useEffect(() => {
+    if (!hasValidToken && !hasStartedCountRef.current) {
+      hasStartedCountRef.current = true;
+      handleDecreaseRedirectCount();
+    }
+  }, [hasValidToken, handleDecreaseRedirectCount]);
 
   const handleExpireToken = (name: string[]) => {
     dispatch(expireToken(name));
-  }
+  };
 
   // navbar component that displays the user's email or 'Guest'
   return (
@@ -38,16 +60,24 @@ const Navbar = ({
         )}
       </div>
       <div className='flex flex-row'>
-        <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>
-          {isLoading ? 'Loading...' : 'Button 1'}
-        </button>
-        <button onClick={() => handleExpireToken(["token"])} className='bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-4'>
+        <button
+          onClick={() => handleExpireToken(['token'])}
+          className='bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-4'
+        >
           Expire token
         </button>
         <button className='bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-4'>
           Expire refresh token
         </button>
       </div>
+      {/* show redirect count if there's no valid token */}
+      {!hasValidToken && (
+        <div className='flex flex-col text-gray-700'>
+          <span className='text-sm'>
+            Redirecting to login page in {redirectCount} seconds
+          </span>
+        </div>
+      )}
     </nav>
   );
 };
