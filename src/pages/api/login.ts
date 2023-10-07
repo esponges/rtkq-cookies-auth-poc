@@ -29,7 +29,7 @@ const increaseTimeStamp = (timeStamp: string, offset?: number) => {
 }
 
 // set a resolved promise that gets a new token and refreshToken
-const loginMutation = async () => {
+export const loginMutation = async () => {
   const token = generateTimeStamp();
   // refresh token should be 5 more days
   const refreshToken = increaseTimeStamp(token, 5 * 24 * 60 * 60 * 1000);

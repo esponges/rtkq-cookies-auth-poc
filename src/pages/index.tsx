@@ -1,7 +1,6 @@
 import Link from 'next/link';
 
 import { useLoginMutation } from '@/store/services/auth';
-import { AUTH_REFRESH_TOKEN, AUTH_TOKEN, removeCookies } from '@/lib/cookies';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { logout } from '@/store/slices/auth';
