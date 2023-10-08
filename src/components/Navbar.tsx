@@ -30,7 +30,7 @@ const Navbar = ({ tokenExpiryDate, refreshTokenExpiryDate }: Props) => {
   const { error: authDetailsFetchError, isLoading } = useGetAuthDataQuery(
     { token: token || '' },
     {
-      skip: !userEmail && !!token,
+      skip: !!userEmail || !token,
     }
   );
 
@@ -53,7 +53,7 @@ const Navbar = ({ tokenExpiryDate, refreshTokenExpiryDate }: Props) => {
       handleLogout();
     }
 
-    if (authDetailsFetchError || !token) {
+    if (authDetailsFetchError || !token && !hasStartedCountRef.current) {
       hasStartedCountRef.current = true;
       handleDecreaseRedirectCount();
     }
