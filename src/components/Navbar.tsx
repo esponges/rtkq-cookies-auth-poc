@@ -53,7 +53,7 @@ const Navbar = ({ tokenExpiryDate, refreshTokenExpiryDate }: Props) => {
       handleLogout();
     }
 
-    if (authDetailsFetchError) {
+    if (authDetailsFetchError || !token) {
       hasStartedCountRef.current = true;
       handleDecreaseRedirectCount();
     }
@@ -62,6 +62,7 @@ const Navbar = ({ tokenExpiryDate, refreshTokenExpiryDate }: Props) => {
     handleLogout,
     authDetailsFetchError,
     handleDecreaseRedirectCount,
+    token,
   ]);
 
   const handleExpireToken = (name: string[]) => {
