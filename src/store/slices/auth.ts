@@ -37,6 +37,14 @@ const slice = createSlice({
         }
       )
       .addMatcher(
+        authApi.endpoints.getAuthData.matchFulfilled,
+        (_state, { payload }) => {
+          setAuthCookie(payload.token, AUTH_TOKEN);
+          setAuthCookie(payload.refreshToken, AUTH_REFRESH_TOKEN);
+          return payload;
+        }
+      )
+      .addMatcher(
         userApi.endpoints.userDetails.matchFulfilled,
         (_state, { payload }) => {
           // optional:

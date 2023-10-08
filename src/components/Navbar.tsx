@@ -1,5 +1,10 @@
-import { getValidAuthTokens } from '@/lib/cookies';
+import {
+  AUTH_REFRESH_TOKEN,
+  AUTH_TOKEN,
+  getValidAuthTokens,
+} from '@/lib/cookies';
 import { RootState } from '@/store';
+import { useGetAuthDataQuery } from '@/store/services/auth';
 import { expireToken, logout } from '@/store/slices/auth';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -10,10 +15,7 @@ type Props = {
   refreshTokenExpiryDate?: string;
 };
 
-const Navbar = ({
-  tokenExpiryDate,
-  refreshTokenExpiryDate,
-}: Props) => {
+const Navbar = ({ tokenExpiryDate, refreshTokenExpiryDate }: Props) => {
   const [redirectCount, setRedirectCount] = useState(10);
   const hasStartedCountRef = useRef(false);
 
@@ -23,11 +25,23 @@ const Navbar = ({
 
   const { token, refreshToken } = getValidAuthTokens();
 
+  // TODO: handle case when user refreshed the app and we need to get auth
+  // details using the existing token
+  const { error: authDetailsFetchError, isLoading } = useGetAuthDataQuery(
+    { token: token || '' },
+    {
+      skip: !userEmail && !!token,
+    }
+  );
+
   const handleDecreaseRedirectCount = useCallback(() => {
     setInterval(() => {
       setRedirectCount((prev) => prev - 1);
     }, 1000);
   }, []);
+
+  // TODO: handle case when the token is expired and we need to get a new one
+  // using the refresh token
 
   const handleLogout = useCallback(() => {
     push('/');
@@ -39,27 +53,28 @@ const Navbar = ({
       handleLogout();
     }
 
-    if (!token && !hasStartedCountRef.current) {
+    if (authDetailsFetchError) {
       hasStartedCountRef.current = true;
       handleDecreaseRedirectCount();
     }
   }, [
-    token,
-    handleDecreaseRedirectCount,
     redirectCount,
-    push,
     handleLogout,
+    authDetailsFetchError,
+    handleDecreaseRedirectCount,
   ]);
 
   const handleExpireToken = (name: string[]) => {
     dispatch(expireToken(name));
   };
 
-  // navbar component that displays the user's email or 'Guest'
   return (
     <nav className='flex flex-row justify-between items-center bg-gray-200 p-4'>
-      <h1 className='text-gray-700'>Hi {userEmail || 'Guest'}</h1>
-      {/* show token dates */}
+      {isLoading ? (
+        <h1 className='text-gray-700'>Getting auth details...</h1>
+      ) : (
+        <h1 className='text-gray-700'>Hi {userEmail || 'Guest'}</h1>
+      )}
       <div className='flex flex-col text-gray-700'>
         {!!tokenExpiryDate && (
           <span className='text-sm'>
@@ -75,7 +90,7 @@ const Navbar = ({
       <div className='flex flex-row'>
         {token ? (
           <button
-            onClick={() => handleExpireToken(['token'])}
+            onClick={() => handleExpireToken([AUTH_TOKEN])}
             className='bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-4'
           >
             Expire token
@@ -83,14 +98,13 @@ const Navbar = ({
         ) : null}
         {refreshToken ? (
           <button
-            onClick={() => handleExpireToken(['refreshToken'])}
+            onClick={() => handleExpireToken([AUTH_REFRESH_TOKEN])}
             className='bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-4'
           >
             Expire refresh token
           </button>
         ) : null}
       </div>
-      {/* show redirect count if there's no valid token */}
       {!token && refreshToken && (
         <div className='flex flex-col text-gray-700'>
           <span className='text-sm'>
