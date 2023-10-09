@@ -2,6 +2,7 @@ import {
   AUTH_REFRESH_TOKEN,
   AUTH_TOKEN,
   getValidAuthTokens,
+  isTokenExpired,
 } from '@/lib/cookies';
 import { RootState } from '@/store';
 import { useGetAuthDataQuery } from '@/store/services/auth';
@@ -24,6 +25,8 @@ const Navbar = ({ tokenExpiryDate, refreshTokenExpiryDate }: Props) => {
   const { userEmail } = useSelector((state: RootState) => state.auth);
 
   const { token, refreshToken } = getValidAuthTokens();
+  const isAuthTokenExpired = isTokenExpired(tokenExpiryDate);
+  const isRefreshTokenExpired = isTokenExpired(refreshTokenExpiryDate);
 
   // TODO: handle case when user refreshed the app and we need to get auth
   // details using the existing token
@@ -78,12 +81,12 @@ const Navbar = ({ tokenExpiryDate, refreshTokenExpiryDate }: Props) => {
       )}
       <div className='flex flex-col text-gray-700'>
         {!!tokenExpiryDate && (
-          <span className='text-sm'>
+          <span className={`text-sm ${isAuthTokenExpired ? 'text-red-500' : ''}`}>
             Token expires at: {tokenExpiryDate.toLocaleString()}
           </span>
         )}
         {!!refreshTokenExpiryDate && (
-          <span className='text-sm'>
+          <span className={`text-sm ${isRefreshTokenExpired ? 'text-red-500' : ''}`}>
             Refresh token expires at: {refreshTokenExpiryDate.toLocaleString()}
           </span>
         )}

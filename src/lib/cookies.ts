@@ -33,7 +33,7 @@ export const expireCookies = (cookies: string[]) => {
       path: '/',
     });
   });
-}
+};
 
 export const getValidAuthTokens = (t?: string, rT?: string) => {
   const token = t || getAuthCookie(AUTH_TOKEN);
@@ -49,19 +49,11 @@ export const getValidAuthTokens = (t?: string, rT?: string) => {
   };
 };
 
-export const isTokenAboutToExpire = () => {
-  const token = getAuthCookie(AUTH_TOKEN);
-
-  if (!token) return false;
+export const isTokenExpired = (expiryDate?: string) => {
+  if (!expiryDate) return true;
 
   const now = new Date();
-  const tokenDate = new Date(token);
+  const expiry = new Date(expiryDate);
 
-  // if the token is expired
-  if (now > tokenDate) return false;
-
-  // if the token is about to expire
-  if (tokenDate.getTime() - now.getTime() < 5 * 60 * 1000) return true;
-
-  return false;
+  return now.getTime() > expiry.getTime();
 };

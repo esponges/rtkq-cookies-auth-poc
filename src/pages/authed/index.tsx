@@ -1,10 +1,19 @@
 import Link from 'next/link';
+import { useSelector } from 'react-redux';
+import type { RootState } from '@/store';
 
 const AuthedRoute = () => {
+  const { userEmail } = useSelector((state: RootState) => state.auth);
+
   return (
     <div className='text-center mt-10'>
       <h1 className='text-xl mb-5'>
-        Welcome to an <b>Authenticated Route</b>
+        Welcome to an <b>Authenticated Route</b>,
+        {userEmail ? (
+          <div>{userEmail}</div>
+        ) : (
+          <div>however, you should not be here</div>
+        )}
       </h1>
       <Link
         href='/'
