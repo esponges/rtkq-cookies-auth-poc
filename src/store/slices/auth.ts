@@ -1,8 +1,14 @@
 import { LoginResponse } from '@/pages/api/login';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { authApi } from '../services/auth';
-import { AUTH_REFRESH_TOKEN, AUTH_TOKEN, expireCookies, getAuthCookie, removeCookies, setAuthCookie } from '@/lib/cookies';
-import { userApi } from '../services/user';
+import {
+  AUTH_REFRESH_TOKEN,
+  AUTH_TOKEN,
+  expireCookies,
+  getAuthCookie,
+  removeCookies,
+  setAuthCookie,
+} from '@/lib/cookies';
 
 const initialState: Partial<LoginResponse> = {};
 
@@ -22,7 +28,7 @@ const slice = createSlice({
 
       state.token = token;
       state.refreshToken = refreshToken;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -41,14 +47,6 @@ const slice = createSlice({
         (_state, { payload }) => {
           setAuthCookie(payload.token, AUTH_TOKEN);
           setAuthCookie(payload.refreshToken, AUTH_REFRESH_TOKEN);
-          return payload;
-        }
-      )
-      .addMatcher(
-        userApi.endpoints.userDetails.matchFulfilled,
-        (_state, { payload }) => {
-          // optional:
-          // depending on the api response we could also set cookies again here
           return payload;
         }
       );

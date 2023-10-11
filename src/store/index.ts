@@ -1,7 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { authApi } from './services/auth';
 import { authReducer } from './slices/auth';
-import { userApi } from './services/user';
 
 export const store = configureStore({
   reducer: {
@@ -9,11 +8,10 @@ export const store = configureStore({
     auth: authReducer,
     // rtks query api
     [authApi.reducerPath]: authApi.reducer,
-    [userApi.reducerPath]: userApi.reducer,
   },
 
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(authApi.middleware, userApi.middleware),
+    getDefaultMiddleware().concat(authApi.middleware),
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
