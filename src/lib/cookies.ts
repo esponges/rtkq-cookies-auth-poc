@@ -9,6 +9,10 @@ export const setAuthCookie = (token: string, name: string) => {
   setCookie(name, toBase64, {
     maxAge: 30 * 24 * 60 * 60,
     path: '/',
+    // more security options here
+    // sameSite: 'strict',
+    // httpOnly: true,
+    // secure: process.env.NODE_ENV === 'production',
   });
 };
 
